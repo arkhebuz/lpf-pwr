@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from ncorr_stdev import *
 
-#		   k    rl     rp
+#	   k    rl     rp
 pomsy = [ [5, 46.35, 41.49],
 	  [6, 46.52, 41.34],
 	  [7, 46.67, 41.17],
