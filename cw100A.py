@@ -21,7 +21,7 @@ aaa = [ [hs, dok_suw*p3, 0],
 [d2s, dok_suw*p3, 0],
 [ms, dok_wag*p3, 0] ]
  
-a = nsk(aaa, fun, slown)
+a = nsk(aaa, fun, slown, 0)
 print a.get_val()
 a.frmat('kg/m^3')
 a.wspolczynniki("p")
