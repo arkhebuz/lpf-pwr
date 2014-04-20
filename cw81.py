@@ -47,15 +47,10 @@ def funkcjaxy(pom, iteracja):
 	return [b2[0], b2[1], b1[0], b1[1] ]
 
 x, dx, y, dy = ciag(pomsy, funkcjaxy)
+reg_zw = regresja(x, y, 0)
+reg_tls = reg_tls(x, dx, y, dy, 0)
 
-print "				A (R)			dA (dR)			B			dB		R^2"
-print "Reg. zwykla:		", regresja(x, y, 0)
-print "Reg. TLS:		", reg_tls(x, dx, y, dy, 0)
-
-#~ for i in range(len(x)):
-	#~ print x[i], dx[i], y[i], dy[i]
-
-
+#~ srednia ciagu estymat czastkowych
 fun = ((rl-rp)**2)/(4*k*l)
 aaa = [ aaay[0], aaay[1], aaax[0] ]
 
@@ -69,4 +64,13 @@ def funkcja(pom, i):
 	return [b[0], b[1], 0, 0]
 
 x, dx, y, dy = ciag(pomsy, funkcja)
-print "Sr. wazona:		", mean_wgh(x, dx, 0)
+sr_waz = mean_wgh(x, dx, 0)
+
+print "				A (R)			dA (dR)			B			dB		R^2"
+print "Reg. zwykla:		", reg_zw
+print "Reg. TLS:		", reg_tls
+print "Sr. wazona:		", sr_waz
+
+#~ frmat(mean_wgh( [reg_zw[0], reg_tls[0], sr_waz[0]], [reg_zw[1], reg_tls[1], sr_waz[1]], 0), "m")
+#~ for i in range(len(x)):
+	#~ print x[i], dx[i], y[i], dy[i]
