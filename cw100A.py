@@ -17,9 +17,9 @@ ms, hs, d1s, d2s = sym.symbols('ms hs d1s d2s')
 fun = 4*ms/(hs*sym.pi*(d1s**2 - d2s**2))
  
 aaa = [ [hs, dok_suw*p3, 0],
-[d1s, dok_suw*p3, 0],
-[d2s, dok_suw*p3, 0],
-[ms, dok_wag*p3, 0] ]
+        [d1s, dok_suw*p3, 0],
+        [d2s, dok_suw*p3, 0],
+        [ms, dok_wag*p3, 0] ]
  
 a = nsk(aaa, fun, slown, 0)
 print a.get_val()
