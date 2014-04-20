@@ -1,3 +1,9 @@
 *.pyc
+*.pyo
+
+*~
 *.old
 *.log
+*.png
+*.jpg
+*.svg
