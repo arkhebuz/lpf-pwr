@@ -10,10 +10,10 @@ h   = consts.physical_constants["Planck constant"]
 filters = {'green' : './cw107/green_filter',
            'orange': './cw107/orange_filter',
            'blue'  : './cw107/blue_filter'}
-lamb  =   {'green' : 0.500*10**-6,          # nm
-           'orange': 0.589*10**-6,          # nm
-           'blue'  : 0.458*10**-6}          # nm
-dlamb = 20*(10**-9)                         # nm
+lamb = {'green' : 0.500*10**-6,          # nm
+        'orange': 0.589*10**-6,          # nm
+        'blue'  : 0.458*10**-6}          # nm
+dlamb = 20*(10**-9)                      # nm
 color = 'orange'
 
 #~ reading data

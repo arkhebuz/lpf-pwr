@@ -37,11 +37,11 @@ aaay = [ [rl, dok_sr*p3, 0],
 aaax = [ [l, lam[1]*p3, 0] ]
 
 def funkcjaxy(pom, iteracja):
-    slown = dict(rl=pom[1]*10**-3, 
-                 rp=pom[2]*10**-3, 
-                 k=pom[0]+dK, 
+    slown = dict(rl=pom[1]*10**-3,
+                 rp=pom[2]*10**-3,
+                 k=pom[0]+dK,
                  l=lam[0])
-    
+
     a = nsk(aaay, funy, slown, alfa)
     b1 = a.get_val()
     bbb = nsk(aaax, funx, slown, alfa)
@@ -55,24 +55,25 @@ reg_tls = reg_tls(x, dx, y, dy, 0)
 
 #~ srednia ciagu estymat czastkowych
 fun = ((rl-rp)**2)/(4*k*l)
-aaa = [ aaay[0], aaay[1], aaax[0] ]
+aaa = [aaay[0], aaay[1], aaax[0]]
 
 def funkcja(pom, i):
-    slown = dict(rl=pom[1]*0.001, 
+    slown = dict(rl=pom[1]*0.001,
                  rp=pom[2]*0.001,
                  k=pom[0]+dK,       # k+2.815
                  l=lam[0])
-    
+
     a = nsk(aaa, fun, slown, alfa)
     b = a.get_val()
     if i == -1: a.wspolczynniki("R")
     #print pom[0]+dK,"  ", pom[1]," ", pom[2]," ", b[0],"   ", b[1]
     return [b[0], b[1], 0, 0]
 
-x, dx, y, dy = ciag(pomsy, funkcja)
-sr_waz = mean_wgh(x, dx, 0)
+x, dx, __, __ = ciag(pomsy, funkcja)
+sr_waz = mean_wgh(x, dx, 1)
 
-print "                     A (R)                 dA (dR)               B                         dB                       R^2"
+print("                     A (R)                 dA (dR)               "
+      "B                         dB                       R^2")
 print "Reg. zwykla:     ", reg_zw
 print "Reg. TLS:        ", reg_tls
 print "Sr. wazona:      ", sr_waz

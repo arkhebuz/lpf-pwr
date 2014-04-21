@@ -23,23 +23,23 @@ masa = [0.2473, 0.2474, 0.2475, 0.2474, 0.2474]   # g → kg
 m_sr = mean(masa)                                 # kg
 
 #                                       definiowanie funkcji
-slown = dict(ms=m_sr, 
-             ls=dl_drut, 
-             ss=d_tarczy, 
-             ns=n, 
-             ds=sr_drutu, 
-             t2s=tzt_sr, 
+slown = dict(ms=m_sr,
+             ls=dl_drut,
+             ss=d_tarczy,
+             ns=n,
+             ds=sr_drutu,
+             t2s=tzt_sr,
              t1s=tbt_sr)
 
 ms, ls, ss, ns, ds, t2s, t1s = sym.symbols('ms ls ss ns ds t2s t1s')
 fun = 16*sym.pi*ms*ls*(ss**2)*(ns**2)/((ds**4)*(t2s**2 - t1s**2))
 
 #                                       pakowanie danych
-aaa = [ [ms, dok_wag*p3, masa], 
-        [ls, dok_przym*p3, 0], 
-        [ss, dok_sow*p3, 0], 
-        [ds, dok_sr*p3, 0], 
-        [t1s, dok_stop*p3, tbt], 
+aaa = [ [ms, dok_wag*p3, masa],
+        [ls, dok_przym*p3, 0],
+        [ss, dok_sow*p3, 0],
+        [ds, dok_sr*p3, 0],
+        [t1s, dok_stop*p3, tbt],
         [t2s, dok_stop*p3, tzt] ]
 
 a = nsk(aaa, fun, slown, 0.0)
