@@ -36,7 +36,7 @@ def frmat(liczba, jednostka):
     print ("%."+str(r)+"E") % (w_rnd), "±", ("%."+str(dgt)+"E") % (n_rnd), jednostka
 
 
-def mean_wgh(wlk, wlk_niep, eng_out):
+def mean_wgh(wlk, wlk_niep, eng_out=0):
     """Calculates weighted mean of values with different
     variances and its standard deviation.
     """
@@ -64,7 +64,7 @@ def mean_wgh(wlk, wlk_niep, eng_out):
     return [X_sr, max((varint)**0.5, (varext)**0.5)]
 
 
-def regresja(x, y, eng_out):
+def regresja(x, y, eng_out=0):
     """Normal linear regression"""
     slope, intercept, r_value, p_value, std_err_A = linregress(x, y)
     std_err_B = std_err_A*(sum([i**2 for i in x])/len(x))**0.5
@@ -72,7 +72,7 @@ def regresja(x, y, eng_out):
     return [slope, std_err_A, intercept, std_err_B, r_value**2]
 
 
-def reg_tls(x, x_n, y, y_n, eng_out):
+def reg_tls(x, x_n, y, y_n, eng_out=0):
     """Total least squares linear regression"""
     x = double(x)
     y = double(y)
@@ -107,7 +107,7 @@ def ciag(data_lst, funkcja):
 
 
 class nsk(object):
-    def __init__(self, dane, fun, slown, alfa):
+    def __init__(self, dane, fun, slown, alfa=0):
         """
         Calculates standard uncertainty of indirect measurements
         (non-correlated input quantities assumed)
@@ -124,10 +124,10 @@ class nsk(object):
         suma = []
         self.pochodne = []
 
-        if alfa != 0:
-            kp_u = uniform.ppf(1-alfa, 0, p3**-1)
-        else:
+        if alfa == 0:
             kp_u = 1
+        else:
+            kp_u = uniform.ppf(1-alfa, 0, p3**-1)
 
         for wielkosc in range(len(dane)):
             poch = fun.diff(dane[wielkosc][0])
@@ -138,10 +138,10 @@ class nsk(object):
             if dane[wielkosc][2] != 0:
                 eNka = len(dane[wielkosc][2])
 
-                if alfa != 0:
-                    kp_t = t.ppf(1-alfa/2, eNka)
-                else:
+                if alfa == 0:
                     kp_t = 1
+                else:
+                    kp_t = t.ppf(1-alfa/2, eNka)
 
                 niep_A = std(dane[wielkosc][2], ddof=1) / (eNka)**0.5
                 niep = ((kp_t*niep_A)**2 + (kp_u*dane[wielkosc][1])**2)**0.5

@@ -25,7 +25,7 @@ dz = 0.01/1000                                     # mm → m
 dok_sr = dz + (max(centers)-min(centers))/2000     # mm → m
 lam = [589*10**(-9), 20*10**-9]                    # [λ, ∆λ] nm → m
 dK = 3
-alfa = 0.05
+alfa = 0
 
 #               init
 rl, rp, k, l = sym.symbols('rl rp k l')
@@ -70,7 +70,7 @@ def funkcja(pom, i):
     return [b[0], b[1], 0, 0]
 
 x, dx, __, __ = ciag(pomsy, funkcja)
-sr_waz = mean_wgh(x, dx, 1)
+sr_waz = mean_wgh(x, dx)
 
 print("                     A (R)                 dA (dR)               "
       "B                         dB                       R^2")
