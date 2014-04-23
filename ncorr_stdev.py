@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from numpy import pi, mean, std, double, longdouble as ldbl
+from numpy import mean, std, double, longdouble as ldbl
 # log10 from numpy breaks on double/longdouble
 from math import log10, floor, ceil
 from scipy.stats import linregress, t, uniform
@@ -13,9 +13,13 @@ funx = sym.symbols('funx', cls=sym.Function)
 funy = sym.symbols('funy', cls=sym.Function)
 
 
-def frmat(liczba, jednostka):
-    """Rounds the uncertainlity properly, to 1 or 2 significant digits."""
-    wrt, niep = liczba
+def frmat(number, unit):
+    """Rounds the uncertainlity properly, to 1 or 2 significant digits.
+
+    number - [value, uncertainlity] tuple
+    unit - unit (string)
+    """
+    wrt, niep = number
 
     p = int(floor(log10(niep)))
     pot = 10**p
@@ -33,7 +37,7 @@ def frmat(liczba, jednostka):
     r = p2-p1+dgt
     if r < 0:   r = 0
 
-    print ("%."+str(r)+"E") % (w_rnd), "±", ("%."+str(dgt)+"E") % (n_rnd), jednostka
+    print ("%."+str(r)+"E") % (w_rnd), "±", ("%."+str(dgt)+"E") % (n_rnd), unit
 
 
 def mean_wgh(wlk, wlk_niep, eng_out=0):
@@ -43,6 +47,8 @@ def mean_wgh(wlk, wlk_niep, eng_out=0):
     # https://en.wikipedia.org/wiki/Weighted_mean#Dealing_with_variance
     # http://www.physicsforums.com/showthread.php?t=612633
 
+    wlk = ldbl(wlk)
+    wlk_niep = ldbl(wlk_niep)
     Wi = [(1.0/(i**2)) for i in wlk_niep]
     xWi = [i[0]*i[1] for i in zip(wlk, Wi)]
     V1 = sum(Wi)
@@ -66,19 +72,22 @@ def mean_wgh(wlk, wlk_niep, eng_out=0):
 
 def regresja(x, y, eng_out=0):
     """Normal linear regression"""
-    slope, intercept, r_value, p_value, std_err_A = linregress(x, y)
+    x = ldbl(x)
+    y = ldbl(y)
+    slope, intercept, r_value, p_value, std_err_A = ldbl(linregress(x, y))
     std_err_B = std_err_A*(sum([i**2 for i in x])/len(x))**0.5
-    if eng_out is True: print slope, std_err_A, intercept, std_err_B, r_value**2
+    if eng_out is True: print slope, std_err_A, intercept, std_err_B, r_value**2, p_value
     return [slope, std_err_A, intercept, std_err_B, r_value**2]
 
 
 def reg_tls(x, x_n, y, y_n, eng_out=0):
     """Total least squares linear regression"""
+    # odrpack breaks on longdbl/sympy.float
     x = double(x)
     y = double(y)
     x_n = double(x_n)
     y_n = double(y_n)
-    reg = regresja(x, y, 0)     # initial guess
+    reg = double(regresja(x, y, 0))     # initial guess
 
     def f(B, z):
         return B[0]*z + B[1]
@@ -93,11 +102,11 @@ def reg_tls(x, x_n, y, y_n, eng_out=0):
     return [A, dA, B, dB]
 
 
-def ciag(data_lst, funkcja):
+def ciag(data_lst, function):
+    """data_lst - list of values
+    function - function taking data_lst[i] and returning [x, dx, y, dy]
     """
-    funkcja - function returning [x, dx, y, dy]
-    """
-    out = [double(funkcja(data_lst[eN], eN)) for eN in range(len(data_lst))]
+    out = [ldbl(function(data_lst[eN], eN)) for eN in range(len(data_lst))]
     x  = [i[0] for i in out]
     dx = [i[1] for i in out]
     y  = [i[2] for i in out]
@@ -124,7 +133,7 @@ class nsk(object):
         For SciPy/NumPy functions, Numpy's longdouble is used where possible,
         with fallback to standard double when it breaks.
         """
-        self.precision = 33
+        self.precision = 33   # 33 digits of (unnecessary) precision, wow...
         self.dane = dane
         self.fun = fun
         self.slown = {k : sym.Float(str(v), self.precision) for k,v in slown.iteritems()}
@@ -139,7 +148,7 @@ class nsk(object):
 
         for wielkosc in range(len(dane)):
             poch = fun.diff(dane[wielkosc][0])
-            Cx = poch.evalf(subs=slown, n=self.precision)       # 33 digits of precision...
+            Cx = poch.evalf(subs=slown, n=self.precision)
 
             if dane[wielkosc][2] == 0:
                 niep = kp_u*ldbl(dane[wielkosc][1])
@@ -165,6 +174,7 @@ class nsk(object):
         return [wartosc, niepewnosc]
 
     def frmat(self, jednostka):
+        """See frmat function"""
         frmat(self.get_val(), jednostka)
 
     def wspolczynniki(self, nazwa_funkcji):
@@ -177,4 +187,3 @@ class nsk(object):
 
             sym.pprint(sym.Eq(rown2, self.pochodne[poch][2]), use_unicode=True)
             print ""
-
