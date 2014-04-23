@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from numpy import pi, mean, std, longdouble, double
+from numpy import pi, mean, std, double, longdouble as ldbl
 # log10 from numpy breaks on double/longdouble
 from math import log10, floor, ceil
 from scipy.stats import linregress, t, uniform
@@ -7,7 +7,7 @@ import scipy.odr.odrpack as odrpack
 import sympy as sym
 
 # Misc.
-p3 = 3.0**(-0.5)
+p3 = ldbl(3.0)**(-0.5)
 fun  = sym.symbols('fun', cls=sym.Function)
 funx = sym.symbols('funx', cls=sym.Function)
 funy = sym.symbols('funy', cls=sym.Function)
@@ -116,43 +116,51 @@ class nsk(object):
         C - SymPy symbol
         B - B-type standard uncertainty
         a - Values list for calculating A-type standard uncertainty
+
+        fun - SymPy function
+        slown - ditctionary with values for SymPy symbols
+
+        For SymPy objects, evaluation with 33 digits of precision is used.
+        For SciPy/NumPy functions, Numpy's longdouble is used where possible,
+        with fallback to standard double when it breaks.
         """
+        self.precision = 33
         self.dane = dane
         self.fun = fun
-        self.slown = slown
-
+        self.slown = {k : sym.Float(str(v), self.precision) for k,v in slown.iteritems()}
+        alfa = double(alfa)
         suma = []
         self.pochodne = []
 
         if alfa == 0:
-            kp_u = 1
+            kp_u = ldbl(1)
         else:
-            kp_u = uniform.ppf(1-alfa, 0, p3**-1)
+            kp_u = ldbl(uniform.ppf(1-alfa, 0, p3**-1))
 
         for wielkosc in range(len(dane)):
             poch = fun.diff(dane[wielkosc][0])
-            #print poch, poch.evalf(subs=slown)
-            Cx = longdouble(poch.evalf(subs=slown))
-            self.pochodne.append([dane[wielkosc][0], poch, Cx])
+            Cx = poch.evalf(subs=slown, n=self.precision)       # 33 digits of precision...
 
-            if dane[wielkosc][2] != 0:
-                eNka = len(dane[wielkosc][2])
-
-                if alfa == 0:
-                    kp_t = 1
-                else:
-                    kp_t = t.ppf(1-alfa/2, eNka)
-
-                niep_A = std(dane[wielkosc][2], ddof=1) / (eNka)**0.5
-                niep = ((kp_t*niep_A)**2 + (kp_u*dane[wielkosc][1])**2)**0.5
+            if dane[wielkosc][2] == 0:
+                niep = kp_u*ldbl(dane[wielkosc][1])
             else:
-                niep = kp_u*dane[wielkosc][1]
-            suma.append((Cx*niep)**2)
+                eNka = len(dane[wielkosc][2])
+                if alfa == 0:
+                    kp_t = ldbl(1)
+                else:
+                    kp_t = ldbl(t.ppf(1-alfa/2, eNka))
+                niep_A = std(ldbl(dane[wielkosc][2]), ddof=1) / (eNka)**0.5
+                niep_B = ldbl(dane[wielkosc][1])
+                niep = ((kp_t*niep_A)**2 + (kp_u*niep_B)**2)**0.5
+
+            self.pochodne.append([dane[wielkosc][0], poch, Cx])
+            suma.append((Cx*sym.S(niep))**2)
 
         self.u = (sum(suma))**0.5
 
     def get_val(self):
-        wartosc = self.fun.evalf(subs=self.slown)
+        """Returns values as sympy.core.numbers.Float"""
+        wartosc = self.fun.evalf(subs=self.slown, n=self.precision)
         niepewnosc = self.u
         return [wartosc, niepewnosc]
 
