@@ -1,14 +1,17 @@
 ## ncorr_stdev.py
 Largely a wrapper around NumPy, SciPy and SymPy features, providing ready to use routines for calculating:
-* weighted mean with varing variances in data (returns weighted mean standard error too);
-* standard linear regression (and returns both A and B coefficients standard errors);
+* weighted mean with varying variances in data (returns standard error of the weighted mean, too);
+* simple linear regression (but returns standard errors of both A and B coefficients);
 * total least squares linear regression (as above);
-* standard uncertainty of indirect measurements with non-correlated input quantities (symbolic calcus used for needed deriatives);
+* standard uncertainty of indirect measurements with non-correlated input quantities (symbolic calculus used for needed derivatives);
+
+Well, don't expect too much from it. It came to life as a "byproduct" of physics courses&experiments at uni, kinda. Thats frome where are cw***.py files!
+
 
 ----
 
-
 #### LPF PWR
+Czyli Laboratorium Podstaw Fizyki Instytutu Fizyki Politechniki Wrocławskiej. Nie, w tym repozytorium nie ma gotowych sprawozdań (buuuu...). Są skrypty z obliczeniami do paru ćwiczeń:
 
 * Ćw. nr. 12: `WYZNACZANIE MODUŁU SZTYWNOŚCI METODĄ DYNAMICZNĄ`
     * [cwn012.pdf](http://www.if.pwr.wroc.pl/lpf/instrukcje/cwn012.pdf)/[cw012.pdf](http://www.if.pwr.wroc.pl/lpf/opisy/cw012.pdf)
