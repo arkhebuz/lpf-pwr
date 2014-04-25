@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from numpy import dtype, finfo, mean, std, double, longdouble as ldbl
+from numpy import dtype, finfo, mean, std, double
+from numpy import errstate as numpyerrstate, longdouble as ldbl
 # log10 from numpy breaks on double/longdouble
 from math import log10, floor, ceil
 from scipy.stats import linregress, t, uniform
@@ -56,25 +57,30 @@ def mean_wgh(val_lst, sderr_lst, eng_out=0):
 
     wlk = ldbl(val_lst)
     wlk_niep = ldbl(sderr_lst)
-    Wi = [(1.0/(i**2)) for i in wlk_niep]
-    xWi = [i[0]*i[1] for i in zip(wlk, Wi)]
-    V1 = sum(Wi)
-    X_sr = sum(xWi)/V1
+    with numpyerrstate(divide='raise'):
+        try:
+            Wi = [(1.0/(i**2)) for i in wlk_niep]
+            xWi = [i[0]*i[1] for i in zip(wlk, Wi)]
+            V1 = sum(Wi)
+            N_mns_1 = abs(len(wlk))-1
 
-    N_mns_1 = len(wlk)-1
-    if N_mns_1 == 0:    N_mns_1 = 1
+            X_sr = sum(xWi)/V1
+            varint = 1.0/V1
+            wi_t_resid_sq = [i[1]*(i[0] - X_sr)**2 for i in zip(wlk, Wi)]
+            varext = (varint/N_mns_1)*sum(wi_t_resid_sq)
+            if eng_out:
+                V2 = sum([i**2 for i in Wi])
+                varone = ((V1/(V1**2 - V2))*sum(wi_t_resid_sq))**0.5
+                print("inside mean_wgh: int: "+str((varint)**0.5)+
+                      ", ext: "+str((varext)**0.5)+
+                      ", ext/int: "+str((varext/varint)**0.5)+
+                      ", "+str(varone)+" ;")
+            return [X_sr, max((varint)**0.5, (varext)**0.5)]
 
-    varint = 1.0/V1
-    wi_t_resid_sq = [i[1]*(i[0] - X_sr)**2 for i in zip(wlk, Wi)]
-    varext = (varint / N_mns_1)*sum(wi_t_resid_sq)
-
-    if eng_out:
-        V2 = sum([i**2 for i in Wi])
-        varone = ((V1/(V1**2 - V2))*sum(wi_t_resid_sq))**0.5
-        print("inside( int: "+str((varint)**0.5)+", ext: "+str((varext)**0.5)+
-              ", ext/int: "+str((varext/varint)**0.5)+", "+str(varone)+" )")
-
-    return [X_sr, max((varint)**0.5, (varext)**0.5)]
+        except (ZeroDivisionError, FloatingPointError) as mean_wgh_error:
+            print ("Whoops, check your input data. You might have too short l"
+                "ists (len<2) or standard deviation equal to zero somewhere.")
+            raise mean_wgh_error
 
 
 def regresja(x, y, eng_out=0):
@@ -83,7 +89,8 @@ def regresja(x, y, eng_out=0):
     y = ldbl(y)
     slope, intercept, r_value, p_value, std_err_A = ldbl(linregress(x, y))
     std_err_B = std_err_A*(sum([i**2 for i in x])/len(x))**0.5
-    if eng_out is True: print slope, std_err_A, intercept, std_err_B, r_value**2, p_value
+    if eng_out is True:
+        print slope, std_err_A, intercept, std_err_B, r_value**2, p_value
     return [slope, std_err_A, intercept, std_err_B, r_value**2]
 
 
