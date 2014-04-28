@@ -65,8 +65,6 @@ def funkcja(pom, i):
 
     a = nsk(aaa, fun, slown, alfa)
     b = a.get_val()
-    if i == -1: a.wspolczynniki("R")
-    #print pom[0]+dK,"  ", pom[1]," ", pom[2]," ", b[0],"   ", b[1]
     return [b[0], b[1], 0, 0]
 
 x, dx, __, __ = ciag(pomsy, funkcja)
@@ -77,7 +75,3 @@ print("                     A (R)                 dA (dR)               "
 print "Reg. zwykla:     ", reg_zw
 print "Reg. TLS:        ", reg_tls
 print "Sr. wazona:      ", sr_waz
-
-#~ frmat(mean_wgh( [reg_zw[0], reg_tls[0], sr_waz[0]], [reg_zw[1], reg_tls[1], sr_waz[1]], 0), "m")
-#~ for i in range(len(x)):
-    #~ print x[i], dx[i], y[i], dy[i]
